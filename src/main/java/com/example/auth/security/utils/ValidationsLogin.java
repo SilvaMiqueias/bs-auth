@@ -4,7 +4,10 @@ public @interface ValidationsLogin {
     public static final String[] ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED = {
             "/auth/users/login",
             "/auth/users",
-            "/auth/users/create"
+            "/auth/users/create",
+            "/cst/public/**",
+            "/report/public/**"
+
     };
 
     // Endpoints que requerem autenticação para serem acessados
@@ -12,7 +15,8 @@ public @interface ValidationsLogin {
             "/auth/users/get-user",
             "/auth/users/update",
             "/auth/users/update-password",
-            "/auth/test/**"
+            "/auth/test/**",
+            "/report/auth/**"
     };
 
     // Endpoints que só podem ser acessador por usuários com permissão de cliente
