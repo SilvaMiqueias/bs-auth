@@ -9,10 +9,11 @@ import com.example.auth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 
-@RestController
+@Controller
 @RequestMapping("/auth/users")
 public class AuthController {
 
@@ -25,9 +26,21 @@ public class AuthController {
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
+    @PostMapping("/login-customer")
+    public ResponseEntity<RecoveryJwtTokenDTO> loginCustomer(@RequestBody LoginDTO loginDTO){
+        RecoveryJwtTokenDTO token = userService.authenticateUserCustomer(loginDTO);
+        return new ResponseEntity<>(token, HttpStatus.OK);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
         userService.createUser(userDTO);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/create-customer")
+    public ResponseEntity<?> createUserCustomer(@RequestBody UserDTO userDTO) {
+        userService.createUserCustomer(userDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

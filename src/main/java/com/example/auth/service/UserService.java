@@ -52,6 +52,19 @@ public class UserService {
         return new RecoveryJwtTokenDTO(jwtTokenService.generateToken(userDetailsImp));
     }
 
+    public RecoveryJwtTokenDTO authenticateUserCustomer(LoginDTO loginDTO){
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
+
+        Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+
+        UserDetailsImp userDetailsImp = (UserDetailsImp) authentication.getPrincipal();
+
+//        if (!userDetailsImp.getUser().getRoles().get(0).getName().equals(RoleName.ROLE_CUSTOMER))
+//            return null;
+
+        return new RecoveryJwtTokenDTO(jwtTokenService.generateToken(userDetailsImp));
+    }
+
     public void createUser(UserDTO userDTO){
         Role role = roleService.findRole(userDTO.getRole());
         User newUser = User.builder().username(userDTO.getUsername())
@@ -63,14 +76,29 @@ public class UserService {
         userRepository.save(newUser);
     }
 
+    public void createUserCustomer(UserDTO userDTO){
+
+        if(existEmail(userDTO.getUsername()))
+             throw new IllegalArgumentException("Email já cadastrado");
+
+        User newUser = User.builder().username(userDTO.getUsername())
+                .password(securityConfig.passwordEncoder().encode(userDTO.getPassword()))
+                .name(userDTO.getName())
+                .roles(List.of(roleService.findRole(RoleName.ROLE_CUSTOMER)))
+                .build();
+
+        userRepository.save(newUser);
+    }
+
 
     public RecoveryJwtTokenDTO updateUser(UserDTO userDTO){
         User user = this.userRepository.findById(userDTO.getId().longValue()).orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
         User verifyEmail = this.userRepository.findByUsername(userDTO.getUsername()).orElse(null);
 
        if(verifyEmail != null){
-           if(verifyEmail.getId().intValue() != userDTO.getId())
+           if(verifyEmail.getId().intValue() != userDTO.getId()){
                throw new RuntimeException("Ação não permitida");
+           }
        }
 
        user.setName(userDTO.getName());
@@ -91,6 +119,11 @@ public class UserService {
         userRepository.save(user);
 
         return   authenticateUser(new LoginDTO(user.getUsername(), passwordDTO.getConfirmPassword()));
+    }
+
+
+    public Boolean existEmail(String email){
+      return this.userRepository.findByUsername(email).isPresent();
     }
 
 }

@@ -3,8 +3,10 @@ package com.example.auth.security.utils;
 public @interface ValidationsLogin {
     public static final String[] ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED = {
             "/auth/users/login",
+            "/auth/users/login-customer",
             "/auth/users",
             "/auth/users/create",
+            "/auth/users/create-customer",
             "/cst/public/**",
             "/report/public/**"
 
@@ -16,7 +18,8 @@ public @interface ValidationsLogin {
             "/auth/users/update",
             "/auth/users/update-password",
             "/auth/test/**",
-            "/report/auth/**"
+            "/report/auth/**",
+            "/api/v1/**"
     };
 
     // Endpoints que só podem ser acessador por usuários com permissão de cliente
